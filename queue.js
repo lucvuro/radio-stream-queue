@@ -1,7 +1,8 @@
-const { response } = require("@hapi/inert/lib/file");
 const EventEmitter = require("events");
+const { update, ref } = require("firebase/database");
 const { PassThrough } = require("stream");
 const Throttle = require("throttle");
+const { database } = require("./firebase");
 const { readSong, generateRandomId } = require("./utils");
 const { ytbDL } = require("./youtubeDl");
 class Queue {
@@ -61,9 +62,9 @@ class Queue {
       ytbDL
         .downloadVideoAndStream(this._currentSong.id)
         .then((responseData) => {
-          this._currentSource = responseData; //Assgin a new stream to currentSource
           this.stream.emit("play", `${this._currentSong.id}.mp3`);
-          ytbDL.formatToMp3(this._currentSource, throttleTransformable);
+          this._updateDatabase();
+          ytbDL.formatToMp3(responseData, throttleTransformable);
         })
         .catch((err) => {
           this._playLoop();
@@ -73,7 +74,7 @@ class Queue {
       ytbDL
         .downloadVideoAndStream(this._currentSong.id)
         .then((responseData) => {
-          this._currentSource = responseData;
+          this._updateDatabase();
           this.stream.emit("play", `${this._currentSong.id}.mp3`);
           ytbDL.formatToMp3(responseData, throttleTransformable);
         })
@@ -119,5 +120,17 @@ class Queue {
   //     const { index1, index2 } = this._changeOrderInBoxChildren(key);
   //     this._changeOrderInSongs(index1, index2);
   // }
+  async _updateDatabase() {
+    try {
+      await update(ref(database, "rooms/" + this._id), {
+        musicBox: {
+          currentSong: this._currentSong,
+          playlist: this._songs,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 module.exports = Queue;
