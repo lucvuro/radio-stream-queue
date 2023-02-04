@@ -67,7 +67,7 @@ class Queue {
           ytbDL.formatToMp3(responseData, throttleTransformable);
         })
         .catch((err) => {
-          this._playLoop();
+          console.log(err)
         });
     } else {
       this._currentSong = this._currentSong;
@@ -79,7 +79,7 @@ class Queue {
           ytbDL.formatToMp3(responseData, throttleTransformable);
         })
         .catch((err) => {
-          this._playLoop();
+          console.log(err)
         });
     }
   }

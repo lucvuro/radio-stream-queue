@@ -2,6 +2,7 @@ const ytdl = require("ytdl-core");
 const ffmpeg = require("fluent-ffmpeg");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const { default: axios } = require("axios");
+const yt = require('youtube-search-api')
 class youtubeDl {
   constructor() {}
   init() {}
@@ -52,9 +53,25 @@ class youtubeDl {
           resolve(infoNeedForQueue)
         })
         .catch((err) => {
+          console.log(err)
           reject(err)
         })
     })
+  }
+  async searchMusic(keyword){
+    const videos = await yt.GetListByKeyword(keyword)
+    const videosNotLive = videos.items.filter((item) => item.isLive === false)
+    return videosNotLive.slice(0,4).reduce((result, item) => {
+      //Get first 4 videos
+      const info = {
+        id: item.id,
+        title: item.title,
+        author: item.channelTitle,
+        thumbnail: item.thumbnail.thumbnails[0].url
+      }
+      result.push(info)
+      return result
+    }, [])
   }
 }
 const ytbDL = new youtubeDl();

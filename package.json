@@ -22,6 +22,7 @@
     "neo-blessed": "^0.2.0",
     "stream": "^0.0.2",
     "throttle": "^1.0.3",
+    "youtube-search-api": "^1.1.1",
     "ytdl-core": "^4.11.2"
   }
 }

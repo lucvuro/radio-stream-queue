@@ -14,6 +14,9 @@ async function startApp() {
           port: process.env.PORT || 8080,
           host: process.env.HOST || 'localhost',
           compression: false,
+          routes: {
+            cors: true
+          }
           // routes: { files: { relativeTo: Path.join(__dirname, 'public') } }
       });
       await server.register(StaticFilePlugin);
